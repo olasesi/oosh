@@ -15,14 +15,36 @@ class CreateUsersTable extends Migration
     {
         Schema::create('users', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
-            $table->string('email')->unique();
-            $table->timestamp('email_verified_at')->nullable();
-            $table->string('password');
-            $table->rememberToken();
+            $table->string('active')->default('0');
+            $table->string('email')->nullable();
+            $table->string('firstname')->nullable();
+            $table->string('lastname')->nullable();
+            $table->string('phone')->nullable();
+            $table->string('password')->nullable();
+            $table->string('date_of_birth')->nullable();
+            $table->string('gender')->nullable();
+            $table->string('role')->default('user');
+            $table->string('profile_picture')->nullable();
+            $table->string('remember_token')->nullable();
+            $table->string('username')->nullable();
+            $table->string('location')->nullable();
+            $table->string('country')->nullable();
+            $table->string('website')->nullable();
+            $table->string('bio')->nullable();
+            $table->string('peerID')->nullable();
+            $table->string('cover_photo')->nullable();
+            $table->integer('profile_verify')->default(0);
+            $table->integer('page_verify')->default(0);
+            $table->string('voicepeerID')->nullable();
+            $table->string('verification_code')->nullable();
             $table->timestamps();
         });
     }
+
+    
+    
+
+
 
     /**
      * Reverse the migrations.

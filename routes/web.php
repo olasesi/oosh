@@ -1,6 +1,9 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\HomeController;
+use App\Http\Controllers\UserController;
+use App\Http\Controllers\HomepageController;
 
 /*
 |--------------------------------------------------------------------------
@@ -13,6 +16,16 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
-});
+
+Route::get('/', [HomepageController::class, 'index'])->name('homepage');
+Route::get('/home', [HomeController::class, 'index'])->name('home');
+
+//Verify
+Route::get('/verify/{token}', [UserController::class, 'verifyEmail'])->name('user.verified');
+//Auth::routes();
+
+Route::get('/register', [UserController::class, 'createRegister'])->name('register.form');
+//Route::get('/login', [UserController::class, 'login'])->name('login');
+//Route::post('/login', [UserController::class, 'saveLogin'])->name('save.login');
+//Route::post('/save-register', function () {return view('auth.register'); })->name('register.save');
+//Route::post('/save-register', [UserController::class, 'saveRegister'])->name('register.save');
