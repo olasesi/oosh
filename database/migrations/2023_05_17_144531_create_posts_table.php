@@ -17,8 +17,7 @@ class CreatePostsTable extends Migration
             $table->id();
             $table->unsignedbigInteger('user_id')->nullable();
             $table->string('slug')->nullable();
-            $table->string('title')->nullable();
-            $table->longText('description')->nullable();
+            $table->longText('post')->nullable();
             $table->string('file_type')->nullable();
             $table->string('file_name')->nullable();
             $table->string('post_for')->nullable();

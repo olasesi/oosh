@@ -38,8 +38,14 @@ class User extends Authenticatable
        'page_verify',
         'voicepeerID',
         'verification_code'
+        'occupation',
+        'zipcode',
+        'state',
+        'city',
+        'address',
+        'hobby',
     ];
-
+   
     /**
      * The attributes that should be hidden for serialization.
      *

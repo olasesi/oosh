@@ -24,7 +24,7 @@ class CreateUsersTable extends Migration
             $table->string('date_of_birth')->nullable();
             $table->string('gender')->nullable();
             $table->string('role')->default('user');
-            $table->string('profile_picture')->nullable();
+            $table->string('profile_picture')->default();
             $table->string('remember_token')->nullable();
             $table->string('username')->nullable();
             $table->string('location')->nullable();
@@ -37,6 +37,13 @@ class CreateUsersTable extends Migration
             $table->integer('page_verify')->default(0);
             $table->string('voicepeerID')->nullable();
             $table->string('verification_code')->nullable();
+            $table->string('forget_password')->nullable();
+            $table->string('occupation')->nullable();
+            $table->string('zipcode')->nullable();
+            $table->string('state')->nullable();
+            $table->string('city')->nullable();
+            $table->string('address')->nullable();
+            $table->string('hobby')->nullable();
             $table->timestamps();
         });
     }
