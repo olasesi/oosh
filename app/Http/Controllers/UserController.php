@@ -68,14 +68,6 @@ class UserController extends Controller
     'message'=>'Registration was successful']);
 
 }
-
-        // $randomCode = random_int(100000, 999999);
-        // $randomToken = Str::random(30);
-        // $email_data = ['verification_code'=>$randomCode,'token'=> $randomToken ];
-        
-        //Mail::to($request->input('email'))->send(new SignupRegistration($email_data));
-      
-
         
     }
 
@@ -97,14 +89,16 @@ class UserController extends Controller
           if (Auth::attempt(['email' => $request->input('email'), 'password' => $request->input('password'), 'active' => 1])) {
              $request->session()->regenerate();
              
-             $users = User::where('active', 1)->where('id', Auth::user()->id)->get();
+             $user = User::select('email', 'firstname', 'lastname', 'phone', 'date_of_birth', 'gender', 'profile_picture', 'username', 'location', 'country', 'website', 'bio', 'cover_photo', 'occupation')->where('active', 1)->where('id', Auth::user()->id)->get();
+
+             $token = $user->createToken($user->email.'_token')->plainTextToken;
 
              return response()->json(['status' => 200,
-             'users'=> $users,
+            'users'=> $user,
             'message'=>'Login was successful']);
          }else{
-            return response()->json(['status' => 500,
-            'message'=>'Login was not successful']);
+            return response()->json(['status' => 401,
+            'message'=>'Invalid credentials']);
 
          }
 
@@ -122,19 +116,22 @@ class UserController extends Controller
             $verify->verification_code = '';
             $verify->save();
 
-            //Deleting other registrations of the same user
+            //Deleting other registrations of the same user and token on the personal token
             $getColumn = User::select('email')->where('verification_code', $token)->get();
             $deleteRows = User::where('email',$getColumn)->where('active', 0)->delete();
 
-        return response()->json(['status' => 200,
+            //  $getTokenColumn =DB::table('personal_access_tokens')->where('name', $getColumn.'_token')->orderBy("id", "DESC")->take(1)->delete();
+            //I need to be able to delete all rows before the last added
+
+            return response()->json(['status' => 200,
             'message'=>'User email has now been confirmed']);
-        }else{
-            return response()->json(['status' => 500,
-            'message'=>'Invalid']);
-        }
-    
+            }else{
+                return response()->json(['status' => 500,
+                'message'=>'Invalid']);
+            }
         
-      }
+            
+        }
 
       public function forgetPassword(Request $request){
         $validator = Validator::make($request->all(), [
@@ -150,6 +147,12 @@ class UserController extends Controller
                 if($countForgotPassword == 1){
                     $randomToken = random_int(100000, 999999);
                     $email_verification = Str::random(30);
+
+                    $passwordReset = User::select('email')->where('active', 1)->first();
+                    $passwordReset->forget_password = $email_verification;
+                    $passwordReset->save();
+        
+
                     $email_verification_code = ['verification_string'=>$email_verification,'token'=> $randomToken, 'email'=>$request->input('email') ];
                     Mail::to($request->input('email'))->send(new ForgetPassword($email_verification_code));
 
@@ -161,6 +164,17 @@ class UserController extends Controller
                 }
 
             }
+
+public function logout(){
+
+    auth()->user()->tokens()->delete();
+
+    return response()->json(['status' => 500,
+                    'message'=>'Invalid']);
+}
+
+
+
 
       }
 

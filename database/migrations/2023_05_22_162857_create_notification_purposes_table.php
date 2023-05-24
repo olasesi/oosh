@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateFriendRequestsTable extends Migration
+class CreateNotificationPurposesTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,11 +13,9 @@ class CreateFriendRequestsTable extends Migration
      */
     public function up()
     {
-        Schema::create('friend_requests', function (Blueprint $table) {
+        Schema::create('notification_purposes', function (Blueprint $table) {
             $table->id();
-            $table->unsignedbigInteger('sender_id')->nullable();
-            $table->unsignedbigInteger('accepter_id')->nullable();
-            $table->string('status')->default(0);
+            $table->string('purpose')->nullable();
             $table->timestamps();
         });
     }
@@ -29,6 +27,6 @@ class CreateFriendRequestsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('friend_requests');
+        Schema::dropIfExists('notification_purposes');
     }
 }

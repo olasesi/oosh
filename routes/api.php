@@ -3,6 +3,7 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\FriendController;
 use App\Http\Controllers\AccountController;
 
 /*
@@ -24,8 +25,15 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 //Route::get('/users', [UserController::class, 'createRegister'])->route('api.users');
  Route::post('/save-register', [UserController::class, 'saveRegister'])->name('register.save');
  Route::post('/save-login', [UserController::class, 'saveLogin'])->name('login.save');
-
-
- Route::post('/forget-password', [UserController::class, 'forgetPassword'])->name('forgetpasswor.save');
+Route::post('/forget-password', [UserController::class, 'forgetPassword'])->name('forgetpasswor.save');
  
+
+Route::get('/show-friends', [FriendController::class, 'showFriends'])->name('showfriends.save');
+Route::post('/connect-friends', [FriendController::class, 'connectFriend'])->name('connect.save');
+
+ });
+
+ Route::middleware(['auth:sanctum'])->group(function(){
+     //This is for logout, etc
+     Route::post('logout', [UserController::class, 'logout']);
  });
