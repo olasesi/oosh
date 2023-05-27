@@ -4,28 +4,25 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use Illuminate\Support\Str;
+use App\Mail\ForgetPassword;
 use Illuminate\Http\Request;
 use App\Mail\SignupRegistration;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Validator;
 
 class UserController extends Controller
 {
-    public function createRegister()
-    {
-        return view('auth.register');
-    }
-
-
+ 
     public function saveRegister(Request $request)
     {
 
            $countRegistered = User::where('email', $request->input('email'))->where('active', 1)->count();
          if($countRegistered == 1){
-             return response()->json(['status' => 500,'message'=>'already a user',
-            'email'=>$request->input('email')]);
+             return response()->json(['status' => 500,'message'=>'This email address has already been used',
+           ]);
          }
 
             $validator = Validator::make($request->all(), [
@@ -33,13 +30,13 @@ class UserController extends Controller
             'lastname'=>'required',
             'email'=>'required|email',
             'password'=>'required|confirmed',
-            'date_of_birth'=>'nullable',
-            'gender'=>'nullable'  
+            'date_of_birth'=>'string|nullable',
+            'gender'=>'string|nullable'  
             ]);
 
             if($validator->fails()){
                 return response()->json([
-            'validator_errors'=> $validator->messages()
+            'validator_errors'=> $validator->messages(),
                 ]);
             }else{
 
@@ -56,7 +53,7 @@ class UserController extends Controller
         'verification_code' => $email_verification,
     ]);
 
-    $token = $user->createToken($user->email.'_token')->plainTextToken;
+    //$token = $user->createToken($user->email.'_token')->plainTextToken;
    
     $email_verification_code = ['verification_string'=>$email_verification,'token'=> $randomToken, 'email'=>$request->input('email') ];
     Mail::to($request->input('email'))->send(new SignupRegistration($email_verification_code));
@@ -64,7 +61,7 @@ class UserController extends Controller
 
     return response()->json(['status' => 200,
     'email' => $user->email,
-    'token'=>$token, 
+    //'token'=>$token, 
     'message'=>'Registration was successful']);
 
 }
@@ -76,6 +73,7 @@ class UserController extends Controller
         $validator = Validator::make($request->all(), [
             'email'=>'required|email',
             'password'=>'required',
+            'remember_token'=>'nullable',
              ]);
 
          if($validator->fails()){
@@ -84,25 +82,24 @@ class UserController extends Controller
             ]);
         }else{
 
+            $user = User::where('email', $request->email)->where('active', 1)->first();
 
-            //$remember_me = $request->has('remember_token') ? true : false;
-          if (Auth::attempt(['email' => $request->input('email'), 'password' => $request->input('password'), 'active' => 1])) {
-             $request->session()->regenerate();
-             
-             $user = User::select('email', 'firstname', 'lastname', 'phone', 'date_of_birth', 'gender', 'profile_picture', 'username', 'location', 'country', 'website', 'bio', 'cover_photo', 'occupation')->where('active', 1)->where('id', Auth::user()->id)->get();
+            if (! $user || ! Hash::check($request->password, $user->password)) {
+                return response()->json(['status' => 401,
+                'message'=>'Invalid credentials']);
+    
+            }else{
 
-             $token = $user->createToken($user->email.'_token')->plainTextToken;
+            //Deal with the remember me also
+
+            $token = $user->createToken($user->email.'_Token')->plainTextToken;
 
              return response()->json(['status' => 200,
-            'users'=> $user,
+            'email'=> $user->email,
+            'token'=>$token,
             'message'=>'Login was successful']);
-         }else{
-            return response()->json(['status' => 401,
-            'message'=>'Invalid credentials']);
-
          }
-
-    }
+        }
   
     }
 
@@ -113,18 +110,15 @@ class UserController extends Controller
             
             $verify = User::where('verification_code', $token)->first();
             $verify->active = 1;
-            $verify->verification_code = '';
+            $verify->verification_code = null;
             $verify->save();
 
             //Deleting other registrations of the same user and token on the personal token
-            $getColumn = User::select('email')->where('verification_code', $token)->get();
-            $deleteRows = User::where('email',$getColumn)->where('active', 0)->delete();
+            $getColumn = User::select('email')->where('verification_code', $token)->first();
+            $deleteRows = User::where('email', $getColumn)->where('active', 0)->delete();
 
-            //  $getTokenColumn =DB::table('personal_access_tokens')->where('name', $getColumn.'_token')->orderBy("id", "DESC")->take(1)->delete();
-            //I need to be able to delete all rows before the last added
-
-            return response()->json(['status' => 200,
-            'message'=>'User email has now been confirmed']);
+            return redirect()->away(env('APP_FRONTEND_URL_SIGNUP_CONFIRM'));
+            
             }else{
                 return response()->json(['status' => 500,
                 'message'=>'Invalid']);
@@ -148,14 +142,19 @@ class UserController extends Controller
                     $randomToken = random_int(100000, 999999);
                     $email_verification = Str::random(30);
 
-                    $passwordReset = User::select('email')->where('active', 1)->first();
+                    $passwordReset = User::where('email', $request->input('email'))->where('active', 1)->first();
+                    
                     $passwordReset->forget_password = $email_verification;
                     $passwordReset->save();
         
 
                     $email_verification_code = ['verification_string'=>$email_verification,'token'=> $randomToken, 'email'=>$request->input('email') ];
                     Mail::to($request->input('email'))->send(new ForgetPassword($email_verification_code));
-
+                   
+                    return response()->json(['status' => 200,
+                   
+                    'message'=>'Forget password link has been sent']);
+                
 
                 }else{
 
@@ -165,56 +164,30 @@ class UserController extends Controller
 
             }
 
+}
+
+
+public function fetchForgetPasswordLink($token){
+    $verify_user = User::where('forget_password', $token)->where('active', 1)->count();
+
+    if($verify_user == 1){
+        //Implement a code to confirm the token on the spa before it displays the form for reset
+        return redirect()->away(env('APP_FRONTEND_URL_PASSWORD_RESET_FORM'));
+
+        }else{
+            return redirect()->away(env('APP_FRONTEND_URL_404'));
+        }
+
+}
+
+
+
 public function logout(){
 
     auth()->user()->tokens()->delete();
 
-    return response()->json(['status' => 500,
-                    'message'=>'Invalid']);
-}
+    return response()->json(['status' => 200,
+                    'message'=>'Successfully logout']);
+               }
 
-
-
-
-      }
-
-
-
-
-
-
- //    public function login()
-  //    {
-//          return view('auth.login');
-//      }
-
-
-//  public function saveLogin(Request $request)
-//      {
-//          $validatedData = $request->validate([
-//              'email' => 'nullable',
-//             'password'=> 'nullable',
-//             'remember_token'=>'nullable'
-//              ]
-//           );
-
-
-//           $remember_me = $request->has('remember_token') ? true : false;
-//            if (Auth::attempt(['email' => $validatedData['email'], 'password' => $validatedData['password'], 'active' => 1])) {
-//               $request->session()->regenerate();
-    
-//               dd('works');
-//           }else{
-//               return response()->json('Login failed');
-           
-//           }
-    
-
-      
-      
-
-//      }
-
-
-
-}
+ }
