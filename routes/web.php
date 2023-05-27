@@ -23,7 +23,7 @@ Route::get('/home', [HomeController::class, 'index'])->name('home');
 //Verify
 Route::get('/verify/{token}', [UserController::class, 'verifyEmail'])->name('user.verified');
 //Forget Password
-Route::get('/forget-password/{token}', [UserController::class, 'forgetPassword'])->name('user.forgetpassword');
+Route::get('/forget-password/{token}', [UserController::class, 'fetchForgetPasswordLink'])->name('user.forgetpassword');
 
 //Auth::routes();
 

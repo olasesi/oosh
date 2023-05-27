@@ -36,9 +36,9 @@ class PageController extends Controller
     
    }
 
-   public function showGroupList(){
-    //This will pull out a list of groups
- $groups = Group::orderBy('created_at', 'desc')->take(7)->get();
+   public function showRelatedPageList(){
+    //This will pull out a list of related groups
+ $groups = Page::orderBy('created_at', 'desc')->take(7)->get();
      if($users->count() == 0){
          return response()->json(['status' => 200,
         
