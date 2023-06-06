@@ -24,7 +24,7 @@ class CreateUsersTable extends Migration
             $table->string('date_of_birth')->nullable();
             $table->string('gender')->nullable();
             $table->string('role')->default('user');
-            $table->string('profile_picture')->default();
+            $table->string('profile_picture')->default('storage/profile/placeholder.png');
             $table->string('remember_token')->nullable();
             $table->string('username')->nullable();
             $table->string('location')->nullable();

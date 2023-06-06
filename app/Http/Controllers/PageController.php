@@ -5,10 +5,80 @@ namespace App\Http\Controllers;
 use App\Models\Page;
 use App\Models\Event;
 use App\Models\PagePost;
+
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
+use App\Models\PageGeneralSetting;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Validator;
 
 class PageController extends Controller
 {
+
+    public function pageCategoryType(){
+        
+     $users = DB::table('page_category_types')->get();
+ 
+         return response()->json(['status' => 200,
+         'users'=> $users,
+        'message'=>'successful']);
+     
+    }
+ 
+
+    public function createPage(Request $request){
+        $validator = Validator::make($request->all(), [
+            'page_name'=>'nullable',
+            'page_category'=>'nullable',
+            'page_description'=>'nullable',
+
+            ]);
+    
+            if($validator->fails()){
+                return response()->json([
+            'validator_errors'=> $validator->messages()
+                ]);
+            }else{
+                $page = Page::create([
+                    'user_id' => Auth::user()->id,
+                    'page_name' => $request->input('page_name'),
+                    'page_category' => $request->input('page_category'),
+                    'page_description' => $request->input('page_description'),
+
+                ]);
+
+                DB::table('page_members')->insert(
+                    ['page_id' => $page->id, 'user_id' => Auth::user()->id, 'created_at' => Carbon::now(),
+                    'updated_at' => Carbon::now()]
+                );
+
+                return response()->json(['status' => 200,
+                'message'=>'Successful']);
+
+                 
+            }    
+    }
+
+
+
+    public function showPageList(){
+        $pages = DB::table('page_members')->leftJoin('pages', 'pages.id', '=', 'page_members.page_id')->leftJoin('page_category_types', 'page_category_types.id', '=', 'pages.page_category')->select('page_members.id', 'pages.page_name', 'page_category_types.page_category', 'pages.page_description', 'pages.cover_picture', 'pages.created_at')->where('page_members.user_id', Auth::user()->id)->orderByDesc('page_members.created_at')->paginate(12);
+        
+    return response()->json([
+            'status' => 200,
+            'pages'=> $pages,
+           'message' => 'successful',
+           
+        ]);
+       }
+
+
+    // public function showAboutPageTab(){
+
+    // }
+
+
    public function showAboutPageTab($id){
        //This is to pull out a single page
     $users = Page::where('id', $id)->get();
