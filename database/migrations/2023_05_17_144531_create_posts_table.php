@@ -18,9 +18,11 @@ class CreatePostsTable extends Migration
             $table->unsignedbigInteger('user_id')->nullable();
             $table->string('slug')->nullable();
             $table->longText('post')->nullable();
-            $table->string('file_type')->nullable();
-            $table->string('file_name')->nullable();
-            $table->string('post_for')->nullable();
+            $table->string('image')->nullable();
+            $table->string('image_path')->nullable();
+            $table->string('video')->nullable();
+            $table->string('video_path')->nullable();
+            $table->string('visible_post_for')->nullable();
             $table->timestamps();
         });
     }

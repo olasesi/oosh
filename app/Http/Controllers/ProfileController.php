@@ -4,9 +4,18 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class ProfileController extends Controller
 {
+
+public function displayProfile(){
+    $users = User::where('id', Auth::user()->id)->where('active', 1)->first();
+    return response()->json(['status' => 200,
+    'users'=> $users,
+   'message'=> 'successful']);
+}
+
     public function showShowProfile(Request $request)
  {
 

@@ -24,8 +24,8 @@ class CreatePagesTable extends Migration
             $table->string('page_contact')->nullable();
             $table->string('page_website')->nullable();
             $table->string('page_location')->nullable();
-            $table->string('profile_picture')->nullable();
-            $table->string('cover_picture')->nullable();
+            $table->string('profile_picture')->default('storage/page/placeholder.jpg');
+            $table->string('cover_picture')->default('storage/page/coverphoto.jpg');
             $table->timestamps();
         });
     }
