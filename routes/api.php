@@ -55,6 +55,8 @@ Route::post('/connect-friends', [FriendController::class, 'connectFriend']);
      Route::get('/list-page-category', [PageController::class, 'pageCategoryType']);
      Route::post('/create-page', [PageController::class, 'createPage']);
      Route::get('/show-page-list', [PageController::class, 'showPageList']);
+     Route::get('/show-page-cover/{id}', [PageController::class, 'showPageCover']);
+     Route::get('/show-about-page-content/{id}', [PageController::class, 'showAboutPageContent']);
      
  });
 

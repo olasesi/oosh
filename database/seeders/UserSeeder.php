@@ -17,7 +17,7 @@ class UserSeeder extends Seeder
     public function run()
     {
         DB::table('users')->insert([[
-            'id' => '1',
+
             'active'=>'1',
             'firstname'=>'ahmed',
             'lastname'=>'olusesi',
@@ -50,7 +50,7 @@ class UserSeeder extends Seeder
             'updated_at' => Carbon::now()
         ],
         [
-            'id' => '2',
+            
             'active'=>'1',
             'firstname'=>'qudus',
             'lastname'=>'opeyemi',

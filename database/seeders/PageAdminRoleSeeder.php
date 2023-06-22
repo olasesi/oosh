@@ -6,7 +6,7 @@ use Illuminate\Support\Carbon;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 
-class PageGeneralSettingSeeder extends Seeder
+class PageAdminRoleSeeder extends Seeder
 {
     /**
      * Run the database seeds.
@@ -15,22 +15,28 @@ class PageGeneralSettingSeeder extends Seeder
      */
     public function run()
     {
-        DB::table('page_general_settings')->insert([[
+        DB::table('page_admin_roles')->insert([[
             'id' => '1',
-            'name' => 'page cover photo',
-            'value' => 'coverphotoplaceholder.jpg',
+            'roles_permission' => 'Admin',
             'created_at' => Carbon::now(),
             'updated_at' => Carbon::now()
         ],
         [
             'id' => '2',
-            'name' => 'page profile photo',
-            'value' => 'placeholder.png',
+            'roles_permission' => 'Editor',
             'created_at' => Carbon::now(),
             'updated_at' => Carbon::now()
+            
         ],
+        [
+            'id' => '3',
+            'roles_permission' => 'Moderator',
+            'created_at' => Carbon::now(),
+            'updated_at' => Carbon::now()
+            
+        ],
+       
         ]
     );
-
     }
 }

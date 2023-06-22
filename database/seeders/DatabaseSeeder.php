@@ -16,9 +16,9 @@ class DatabaseSeeder extends Seeder
         $this->call([
             UserSeeder::class,
             PageCategoryTypeSeeder::class,
-            PageGeneralSettingSeeder::class,
             UserSeeder::class,
-
+            PageAdminRoleSeeder::class,
+            PagePrivacyTypeSeeder::class,
         ]);
         // \App\Models\User::factory(10)->create();
     }
