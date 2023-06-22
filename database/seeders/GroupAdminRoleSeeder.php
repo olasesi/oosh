@@ -24,12 +24,18 @@ class GroupAdminRoleSeeder extends Seeder
             ],
             [
                 'id' => '2',
+                'roles_permission' => 'Editor',
+                'created_at' => Carbon::now(),
+                'updated_at' => Carbon::now()
+                
+            ],
+            [
+                'id' => '3',
                 'roles_permission' => 'Moderator',
                 'created_at' => Carbon::now(),
                 'updated_at' => Carbon::now()
                 
             ],
-           
             ]
         );
     

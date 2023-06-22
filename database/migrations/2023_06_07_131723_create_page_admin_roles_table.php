@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreatePageAdminsTable extends Migration
+class CreatePageAdminRolesTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,11 +13,9 @@ class CreatePageAdminsTable extends Migration
      */
     public function up()
     {
-        Schema::create('page_admins', function (Blueprint $table) {
+        Schema::create('page_admin_roles', function (Blueprint $table) {
             $table->id();
-            $table->integer('page_id');
-            $table->integer('user_id');
-            $table->integer('page_admin_roles_id');
+            $table->string('roles_permission');
             $table->timestamps();
         });
     }
@@ -29,6 +27,6 @@ class CreatePageAdminsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('page_admins');
+        Schema::dropIfExists('page_admin_roles');
     }
 }
